@@ -1,0 +1,31 @@
+{
+  "name": "inhere/micro-framework",
+  "type": "framework",
+  "description": "the micro framework of the php",
+  "keywords": ["library", "framework", "psr-15", "psr-7"],
+  "homepage": "https://github.com/inhere/php-middleware",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "inhere",
+      "email": "in.798@qq.com",
+      "homepage": "http://www.yzone.net/"
+    }
+  ],
+  "require": {
+    "php": ">=7.0.0"
+  },
+  "autoload": {
+    "classmap": [
+      "./src/Mco.php"
+    ],
+    "psr-4": {
+      "Mco\\" : "src/"
+    }
+  },
+  "suggest": {
+    "inhere/sroute": "Very lightweight and fast router",
+    "inhere/php-validate": "Very lightweight data validate tool library",
+    "inhere/console": "a lightweight php console application library."
+  }
+}
