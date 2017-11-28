@@ -28,7 +28,7 @@ abstract class BaseController
 
     public function __construct($id = null)
     {
-        $this->id = $id ?: get_class($this);
+        $this->id = $id ?: \get_class($this);
     }
 
     /**
@@ -39,6 +39,9 @@ abstract class BaseController
         $this->action = $action;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     protected function resolveView(string $view)
     {
         return \Mco::alias($view);
