@@ -112,7 +112,6 @@ class DefaultServicesProvider implements ServiceProviderInterface
 
     protected function registerServicesForCGI(Container $di)
     {
-
         if (!isset($di['environment'])) {
             /**
              * This service MUST return a shared instance

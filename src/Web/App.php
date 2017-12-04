@@ -69,7 +69,7 @@ class App
         $errHandler = new ErrorHandler($this->di->get('logger'));
         $errHandler->register();
 
-//        de($errHandler);
+       // de($errHandler);
     }
 
     /********************************************************************************
@@ -80,6 +80,8 @@ class App
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @return ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function handleHttp(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -98,6 +100,8 @@ class App
     /**
      * @param bool $send
      * @return ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function run($send = true)
     {
@@ -119,6 +123,8 @@ class App
      * @param ServerRequestInterface $request
      * @param ResponseInterface $response
      * @return ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function process(ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -244,6 +250,8 @@ class App
      * @param  string $bodyContent The request body
      * @param  ResponseInterface $response The response object (optional)
      * @return ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     public function subRequest(
         $method, $path, $query = '', array $headersData = [], array $cookies = [],
@@ -281,7 +289,7 @@ class App
         $uriPath = '/' . ltrim($request->getUri()->getPath(), '/');
 
         // if 'filterFavicon' setting is TRUE
-        if ($uriPath === Dispatcher::FAV_ICON && $this->di->get('config')['filterFavicon']) {
+        if ($uriPath === RouterInterface::FAV_ICON && $this->di->get('config')['filterFavicon']) {
             $this->end('+ICON');
         }
 
@@ -304,6 +312,8 @@ class App
      * Finalize response
      * @param ResponseInterface|MessageInterface $response
      * @return ResponseInterface
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     protected function finalize(ResponseInterface $response)
     {
@@ -337,7 +347,8 @@ class App
      * @param  ServerRequestInterface $request
      * @param  ResponseInterface $response
      * @return ResponseInterface
-     * throws Exception if a handler is needed and not found
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     protected function handleException(Exception $e, ServerRequestInterface $request, ResponseInterface $response)
     {
@@ -378,7 +389,8 @@ class App
      * @param  ServerRequestInterface $request
      * @param  ResponseInterface $response
      * @return ResponseInterface
-     * throws Throwable
+     * @throws \InvalidArgumentException
+     * @throws \RuntimeException
      */
     protected function handlePhpError(Throwable $e, ServerRequestInterface $request, ResponseInterface $response)
     {

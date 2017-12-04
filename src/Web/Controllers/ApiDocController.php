@@ -38,7 +38,7 @@ class ApiDocController extends BaseController
             file_put_contents($docFile, $this->scanAndGenerate($env));
         }
 
-        return $this->renderPartial('swagger-ui', [
+        return $this->renderPartial(\Mco::alias('@mco/Resources/swagger-ui.phtml'), [
             'host' => container('config')->application['host'],
             'assetPath' => '/swagger-ui',
             'jsonFile' => $docUrl,
@@ -49,6 +49,7 @@ class ApiDocController extends BaseController
      * gen swagger api json
      * @param Context $ctx
      * @return ResponseInterface
+     * @throws \RuntimeException
      */
     public function genAction(Context $ctx)
     {
@@ -85,8 +86,8 @@ class ApiDocController extends BaseController
     private function scanAndGenerate($env)
     {
         $dirs = [
-            get_path('resources/swagger/env/' . $env . '.php'),
-            get_path('resources/swagger/api-v1'),
+            get_path('res/swagger/env/' . $env . '.php'),
+            get_path('res/swagger/api-v1'),
             get_path('app/Http'),
         ];
 

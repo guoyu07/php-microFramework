@@ -19,7 +19,6 @@ use Inhere\Library\Traits\LogShortTrait;
  */
 class Mco
 {
-
     use PathAliasTrait, LogShortTrait;
 
     /**
@@ -28,13 +27,13 @@ class Mco
      */
     protected static $aliases = [
         '@root' => BASE_PATH,
-        '@app' => BASE_PATH . '/src/app',
+        '@app' => BASE_PATH . '/app',
         '@bin' => BASE_PATH . '/bin',
         '@src' => BASE_PATH . '/src',
-        '@system' => BASE_PATH . '/src/system',
-        '@user' => BASE_PATH . '/user',
-        '@config' => BASE_PATH . '/config',
+        '@res' => BASE_PATH . '/res',
+        '@conf' => BASE_PATH . '/conf',
         '@tmp' => BASE_PATH . '/tmp',
+        '@mco' => __DIR__,
     ];
 
     /**

@@ -90,7 +90,7 @@ class RouteDispatcher
         if ($newResponse instanceof ResponseInterface) {
             // if route callback returns a ResponseInterface, then use it
             $response = $newResponse;
-        } elseif (is_string($newResponse)) {
+        } elseif (\is_string($newResponse)) {
             // if route callback returns a string, then append it to the response
             if ($response->getBody()->isWritable()) {
                 $response->getBody()->write($newResponse);
@@ -127,6 +127,7 @@ class RouteDispatcher
      *  'matches' => []
      * ]
      * @return mixed
+     * @throws \InvalidArgumentException
      * @throws NotFoundException
      * @internal param string $path The route path
      * @internal param string $method The request method
@@ -141,17 +142,17 @@ class RouteDispatcher
         array_unshift($args, $ctx);
 
         // is a \Closure or a callable object
-        if (is_object($handler)) {
+        if (\is_object($handler)) {
             return $handler(...$args);
         }
 
         //// $handler is string
 
         // is array ['controller', 'action']
-        if (is_array($handler)) {
+        if (\is_array($handler)) {
             $segments = $handler;
-        } elseif (is_string($handler)) {
-            if (strpos($handler, '@') === false && function_exists($handler)) {
+        } elseif (\is_string($handler)) {
+            if (strpos($handler, '@') === false && \function_exists($handler)) {
                 return $handler(...$args);
             }
 
