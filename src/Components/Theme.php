@@ -86,7 +86,7 @@ class Theme
         foreach ($pathMap as $from => $tos) {
             $from = FileHelper::normalizePath(Yii::getAlias($from)) . DIRECTORY_SEPARATOR;
             if (strpos($path, $from) === 0) {
-                $n = strlen($from);
+                $n = \strlen($from);
                 foreach ((array) $tos as $to) {
                     $to = FileHelper::normalizePath(Yii::getAlias($to)) . DIRECTORY_SEPARATOR;
                     $file = $to . substr($path, $n);

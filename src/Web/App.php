@@ -171,7 +171,7 @@ class App
      */
     public function end($response = null)
     {
-        if (is_string($response)) {
+        if (\is_string($response)) {
             $response = $this->di->get('response')->write($response);
         }
 

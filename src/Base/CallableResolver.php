@@ -49,11 +49,11 @@ final class CallableResolver implements CallableResolverInterface
      */
     public function resolve($toResolve)
     {
-        if (is_callable($toResolve)) {
+        if (\is_callable($toResolve)) {
             return $toResolve;
         }
 
-        if (!is_string($toResolve)) {
+        if (!\is_string($toResolve)) {
             $this->assertCallable($toResolve);
         }
 
@@ -101,10 +101,10 @@ final class CallableResolver implements CallableResolverInterface
      */
     private function assertCallable($callable)
     {
-        if (!is_callable($callable)) {
+        if (!\is_callable($callable)) {
             throw new RuntimeException(sprintf(
                 '%s is not resolvable',
-                is_array($callable) || is_object($callable) ? json_encode($callable) : $callable
+                \is_array($callable) || \is_object($callable) ? json_encode($callable) : $callable
             ));
         }
     }

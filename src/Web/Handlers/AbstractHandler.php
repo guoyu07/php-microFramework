@@ -39,14 +39,14 @@ abstract class AbstractHandler
         $acceptHeader = $request->getHeaderLine('Accept');
         $selectedContentTypes = array_intersect(explode(',', $acceptHeader), $this->knownContentTypes);
 
-        if (count($selectedContentTypes)) {
+        if (\count($selectedContentTypes)) {
             return current($selectedContentTypes);
         }
 
         // handle +json and +xml specially
         if (preg_match('/\+(json|xml)/', $acceptHeader, $matches)) {
             $mediaType = 'application/' . $matches[1];
-            if (in_array($mediaType, $this->knownContentTypes, true)) {
+            if (\in_array($mediaType, $this->knownContentTypes, true)) {
                 return $mediaType;
             }
         }

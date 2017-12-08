@@ -35,7 +35,7 @@ abstract class AbstractPlugin implements PluginInterface
     public function __construct(string $name = null)
     {
         if (!$name) {
-            $nodes = explode('\\', get_class($this));
+            $nodes = explode('\\', \get_class($this));
             $name = end($nodes);
         }
 

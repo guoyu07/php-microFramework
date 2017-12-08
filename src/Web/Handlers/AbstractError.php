@@ -64,7 +64,7 @@ abstract class AbstractError extends AbstractHandler
      */
     protected function renderThrowableAsText($throwable)
     {
-        $text = sprintf('Type: %s' . PHP_EOL, get_class($throwable));
+        $text = sprintf('Type: %s' . PHP_EOL, \get_class($throwable));
 
         if ($code = $throwable->getCode()) {
             $text .= sprintf('Code: %s' . PHP_EOL, $code);

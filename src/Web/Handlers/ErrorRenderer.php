@@ -122,7 +122,7 @@ EOF
      */
     protected function renderHtmlExceptionOrError($error)
     {
-        $html = sprintf('<div><strong>Type:</strong> %s</div>', get_class($error));
+        $html = sprintf('<div><strong>Type:</strong> %s</div>', \get_class($error));
 
         if ($code = $error->getCode()) {
             $html .= sprintf('<div><strong>Code:</strong> %s</div>', $code);
@@ -165,7 +165,7 @@ EOF
 
             do {
                 $json['exception'][] = [
-                    'type' => get_class($error),
+                    'type' => \get_class($error),
                     'code' => $error->getCode(),
                     'message' => $error->getMessage(),
                     'file' => $error->getFile(),
@@ -189,7 +189,7 @@ EOF
         if ($this->displayErrorDetails) {
             do {
                 $xml .= "  <error>\n";
-                $xml .= '    <type>' . get_class($error) . "</type>\n";
+                $xml .= '    <type>' . \get_class($error) . "</type>\n";
                 $xml .= '    <code>' . $error->getCode() . "</code>\n";
                 $xml .= '    <message>' . $this->createCdataSection($error->getMessage()) . "</message>\n";
                 $xml .= '    <file>' . $error->getFile() . "</file>\n";
