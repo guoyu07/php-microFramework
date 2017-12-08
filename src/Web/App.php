@@ -17,9 +17,9 @@ use Inhere\Http\ServerRequest;
 use Inhere\Library\Components\ErrorHandler;
 use Inhere\Library\DI\Container;
 use Inhere\Library\Helpers\Http;
-use Inhere\Middleware\MiddlewareAwareTrait;
+use Inhere\Middleware\MiddlewareStackAwareTrait;
+use Inhere\Middleware\RequestHandlerInterface;
 use Inhere\Route\ORouter;
-use Inhere\Route\Dispatcher;
 use Inhere\Route\RouterInterface;
 
 use Mco\Base\AppTrait;
@@ -38,9 +38,9 @@ use Throwable;
  * Class App
  * @package Mco\Web
  */
-class App
+class App implements RequestHandlerInterface
 {
-    use AppTrait, MiddlewareAwareTrait;
+    use AppTrait, MiddlewareStackAwareTrait;
 
     /**
      * Current version
@@ -77,20 +77,16 @@ class App
      *******************************************************************************/
 
     /**
+     * @see AppServer::handleHttpRequest()
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function handleHttp(ServerRequestInterface $request, ResponseInterface $response)
+    public function handleHttp(ServerRequestInterface $request)
     {
         // $response->end('hello, by swoole');
-        $response = $this->process($request, $response);
-
-        // $this->respond($response);
-
-        return $response;
+        return $this->process($request);
     }
 
     /********************************************************************************
@@ -106,8 +102,7 @@ class App
     public function run($send = true)
     {
         /** @var ResponseInterface $response */
-        $response = $this->di->get('response');
-        $response = $this->process($this->di->get('request'), $response);
+        $response = $this->process($this->di->get('request'));
 
         if ($send) {
             $this->respond($response);
@@ -121,12 +116,11 @@ class App
      * This method traverses the application middleware stack and then returns the
      * resultant Response object.
      * @param ServerRequestInterface $request
-     * @param ResponseInterface $response
      * @return ResponseInterface
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    public function process(ServerRequestInterface $request, ResponseInterface $response)
+    public function process(ServerRequestInterface $request): ResponseInterface
     {
         // Ensure basePath is set
         $router = $this->di->get('router');
@@ -143,12 +137,12 @@ class App
 
         // Traverse middleware stack
         try {
-//            $response = $this->callMiddlewareStack($request, $response);
-            $response = $this->handle($request, $response);
+            $response = $this->callStack($request);
+            // $response = $this->handleRequest($request, $response);
         } catch (Exception $e) {
-            $response = $this->handleException($e, $request, $response);
+            $response = $this->handleException($e, $request);
         } catch (Throwable $e) {
-            $response = $this->handlePhpError($e, $request, $response);
+            $response = $this->handlePhpError($e, $request);
         }
 
         $response = $this->finalize($response);
@@ -191,13 +185,12 @@ class App
      * the Request object to the appropriate Route callback routine.
      *
      * @param  ServerRequestInterface $request  The most recent Request object
-     * @param  ResponseInterface      $response The most recent Response object
      *
      * @return ResponseInterface
      * @throws MethodNotAllowedException
      * @throws NotFoundException
      */
-    public function handle(ServerRequestInterface $request, ResponseInterface $response)
+    public function handleRequest(ServerRequestInterface $request): ResponseInterface
     {
         // Get the route info
         $routeInfo = $request->getAttribute('routeInfo');
@@ -212,6 +205,9 @@ class App
         }
 
         unset($routeInfo['request']);
+
+        // create a default response
+        $response = $this->di->get('response');
 
         if ($routeInfo[0] === RouterInterface::FOUND) {
             /** @see RouteDispatcher::dispatch() */
@@ -272,7 +268,7 @@ class App
         }
 
         try {
-            return $this->handle($request, $response);
+            return $this->handleRequest($request);
         } catch (\Throwable $e) {
             return $this->handlePhpError($e, $request, $response);
         }
@@ -350,7 +346,7 @@ class App
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    protected function handleException(Exception $e, ServerRequestInterface $request, ResponseInterface $response)
+    protected function handleException(Exception $e, ServerRequestInterface $request, ResponseInterface $response = null)
     {
         if ($e instanceof MethodNotAllowedException) {
             $handler = 'notAllowedHandler';
@@ -364,6 +360,11 @@ class App
         } else {
             // Other exception, use $request and $response params
             $handler = 'errorHandler';
+
+            if (!$response) {
+                $response = $this->di->get('response');
+            }
+
             $params = [$request, $response, $e];
         }
 
@@ -392,9 +393,13 @@ class App
      * @throws \InvalidArgumentException
      * @throws \RuntimeException
      */
-    protected function handlePhpError(Throwable $e, ServerRequestInterface $request, ResponseInterface $response)
+    protected function handlePhpError(Throwable $e, ServerRequestInterface $request, ResponseInterface $response = null)
     {
         $handler = 'errorHandler';
+
+        if (!$response) {
+            $response = $this->di->get('response');
+        }
 
         /** @var ErrorRenderer $callable */
         if ($callable = $this->di->getIfExist($handler)) {

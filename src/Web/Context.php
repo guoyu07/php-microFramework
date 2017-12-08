@@ -26,6 +26,14 @@ class Context
     /** @var Response */
     public $res;
 
+    /** @var array */
+    public $args;
+
+    /**
+     * @param ServerRequestInterface $request
+     * @param ResponseInterface $response
+     * @return static
+     */
     public static function make(ServerRequestInterface $request, ResponseInterface $response)
     {
         return new static($request, $response);
@@ -57,4 +65,36 @@ class Context
     {
         return $this->res;
     }
+
+    /**
+     * @return ServerRequest
+     */
+    public function getReq(): ServerRequest
+    {
+        return $this->req;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getRes(): Response
+    {
+        return $this->res;
+    }
+
+    //
+    // public function __isset($name)
+    // {
+    //     return $this->req->$name;
+    // }
+    //
+    // public function __get($name)
+    // {
+    //     return $this->req->$name;
+    // }
+    //
+    // public function __set($name, $value)
+    // {
+    //     return $this->res->$name = $value;
+    // }
 }

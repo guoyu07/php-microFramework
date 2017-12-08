@@ -28,13 +28,13 @@ class AppServer extends HttpServer
      */
     protected function handleHttpRequest(Request $request, Response $response)
     {
-        $psr7Req = Psr7Http::createRequest($request);
-        $psr7Res = Psr7Http::createResponse([
-            'Content-Type' => 'text/html; charset=' . \Mco::get('config')->get('charset', 'UTF-8')
-        ]);
+        $psr7Req = Psr7Http::createServerRequest($request);
+        // $psr7Res = Psr7Http::createResponse([
+        //     'Content-Type' => 'text/html; charset=' . \Mco::get('config')->get('charset', 'UTF-8')
+        // ]);
 
         // handle request
-        $psr7Res = $this->app->handleHttp($psr7Req, $psr7Res);
+        $psr7Res = $this->app->handleHttp($psr7Req);
 
         Psr7Http::respond($psr7Res, $response);
     }
