@@ -16,6 +16,11 @@ use Inhere\Library\DI\Container;
  */
 interface AppInterface
 {
+    const ON_START = 'app.start';
+    const ON_STOP = 'app.stop';
+    const ON_BEFORE_REQUEST = 'app.beforeRequest';
+    const ON_AFTER_REQUEST = 'app.afterRequest';
+
     /**
      * @param $id
      * @return mixed

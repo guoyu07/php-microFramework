@@ -22,6 +22,7 @@ use Inhere\Middleware\RequestHandlerInterface;
 use Inhere\Route\ORouter;
 use Inhere\Route\RouterInterface;
 
+use Mco\Base\AppInterface;
 use Mco\Base\AppTrait;
 use Mco\Exceptions\MethodNotAllowedException;
 use Mco\Exceptions\NotFoundException;
@@ -38,7 +39,7 @@ use Throwable;
  * Class App
  * @package Mco\Web
  */
-class App implements RequestHandlerInterface
+class App implements AppInterface, RequestHandlerInterface
 {
     use AppTrait, MiddlewareStackAwareTrait;
 
@@ -50,6 +51,7 @@ class App implements RequestHandlerInterface
 
     /**
      * @param Container $di
+     * @throws \InvalidArgumentException
      */
     public function __construct(Container $di = null)
     {
@@ -69,7 +71,8 @@ class App implements RequestHandlerInterface
         $errHandler = new ErrorHandler($this->di->get('logger'));
         $errHandler->register();
 
-       // de($errHandler);
+        // de($errHandler);
+        $this->trigger(self::ON_START);
     }
 
     /********************************************************************************
@@ -105,7 +108,7 @@ class App implements RequestHandlerInterface
         $response = $this->process($this->di->get('request'));
 
         if ($send) {
-            $this->respond($response);
+            $this->end($response);
         }
 
         return $response;
@@ -135,6 +138,10 @@ class App implements RequestHandlerInterface
             $request = $this->dispatchRouterAndPrepareRoute($request, $router);
         }
 
+        $this->trigger(self::ON_BEFORE_REQUEST, null, [
+            'request' => $request
+        ]);
+
         // Traverse middleware stack
         try {
             $response = $this->callStack($request);
@@ -147,12 +154,18 @@ class App implements RequestHandlerInterface
 
         $response = $this->finalize($response);
 
+        $this->trigger(self::ON_AFTER_REQUEST, null, [
+            'request' => $request,
+            'response' => $response,
+        ]);
+
         return $response;
     }
 
     /**
      * Send the response the client
      * @param ResponseInterface $response
+     * @throws \RuntimeException
      */
     public function respond(ResponseInterface $response)
     {
@@ -173,7 +186,9 @@ class App implements RequestHandlerInterface
             $this->respond($response);
         }
 
-        exit(0);
+        $this->trigger(self::ON_STOP);
+
+        // exit(0);
     }
 
     /**
@@ -415,5 +430,13 @@ class App implements RequestHandlerInterface
         $body->rewind();
 
         return $response->withBody($body);
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->di->get('config')->get('name');
     }
 }
